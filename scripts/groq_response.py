@@ -1,21 +1,16 @@
-# scripts/gpt_response.py
+# scripts/groq_response.py
 
-import os
 import requests
-from dotenv import load_dotenv
-
-# Load environment variables from .env
-load_dotenv()
-groq_api_key = os.getenv("GROQ_API_KEY")
+from app.config import GROQ_API_KEY  # Centralized env variable
 
 def generate_summary_from_gpt(player_name):
     headers = {
-        "Authorization": f"Bearer {groq_api_key}",
+        "Authorization": f"Bearer {GROQ_API_KEY}",
         "Content-Type": "application/json"
     }
 
     payload = {
-        "model": "llama3-70b-8192",  # Updated model
+        "model": "llama3-70b-8192",
         "messages": [
             {"role": "system", "content": "You are a helpful and expert sports analyst."},
             {"role": "user", "content": f"Write a short professional biography of the sports player named {player_name}."}
