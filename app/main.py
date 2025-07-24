@@ -1,44 +1,54 @@
 import sys
 import os
-
-# ✅ Append parent dir to sys.path BEFORE importing from scripts
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-# Add to your imports at the top
-from scripts.live_scores import get_live_football_scores, get_live_cricket_scores
 from dotenv import load_dotenv
-
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
 import streamlit as st
+from scripts.live_scores import get_live_football_scores, get_live_cricket_scores
 from scripts.ingest_news import fetch_espn_news
 from scripts.sportsdb_api import search_player
-from scripts.groq_response import generate_summary_from_gpt  # Now uses Groq
+from scripts.groq_response import generate_summary_from_gpt
 
-# Load environment variables
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+# Load env
 load_dotenv()
 groq_key = os.getenv("GROQ_API_KEY")
 
-st.set_page_config(page_title="Sports GenAI", layout="wide")
-st.title("🏟️ Sports GenAI Chat")
+# --- Page Config ---
+st.set_page_config(page_title="🏟️ Sports GenAI", layout="wide")
+st.markdown("""
+<h1 style='text-align: center; color: #00B4D8;'>🏟️ Sports GenAI Hub</h1>
+<hr style='margin: 1rem 0;'>
+""", unsafe_allow_html=True)
 
-# --- Section 1: Groq Q&A
-st.markdown("### 🤖 Ask Anything About Sports")
-general_question = st.text_input("Ask me anything about sports (e.g., 'Who won the FIFA World Cup in 2018?')")
+# --- Section 1: Groq Q&A ---
+col1, col2 = st.columns(2)
 
-if general_question:
-    with st.spinner("🤔 Thinking..."):
-        if groq_key:
-            answer = generate_summary_from_gpt(general_question, prompt_type="qa")
-            if answer:
-                st.success(answer)
+with col1:
+    st.markdown("### 🔍 Ask About Any Match, Event or Player")
+    general_question = st.text_input("Ask me anything about sports...")
+
+    if general_question:
+        with st.spinner("🤔 Thinking..."):
+            if groq_key:
+                answer = generate_summary_from_gpt(general_question, prompt_type="qa")
+                if answer:
+                    st.success(answer)
+                else:
+                    st.error("❌ Groq couldn't generate a response.")
             else:
-                st.error("❌ Groq couldn't generate a response.")
-        else:
-            st.error("❌ GROQ_API_KEY missing in your .env file.")
+                st.error("❌ GROQ_API_KEY missing in your .env file.")
 
+with col2:
+    st.markdown("### 🧠 Powered by Groq GenAI")
+    st.caption("This app uses Groq (Mixtral) to summarize and answer queries.")
+    st.image("https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Groq_logo_2023.svg/512px-Groq_logo_2023.svg.png", width=150)
 
-# --- Section 2: Player Lookup
-st.markdown("### 🔎 Search a Player")
+# --- Section 2: Player Lookup ---
+st.markdown("""
+---
+<h3>🔎 Player Lookup</h3>
+""", unsafe_allow_html=True)
+
 player_name = st.text_input("Enter a player’s full name:")
 
 if player_name:
@@ -49,7 +59,13 @@ if player_name:
         name = player.get("strPlayer", "Unknown")
         position = player.get("strPosition", "N/A")
         nationality = player.get("strNationality", "N/A")
-        st.success(f"**{name}** ({position} - {nationality})")
+
+        st.markdown(f"""
+        <div style="border:1px solid #00B4D8; padding:15px; border-radius:10px; background-color:#f0f9ff;">
+            <h3>{name}</h3>
+            <p><strong>Position:</strong> {position} | <strong>Nationality:</strong> {nationality}</p>
+        </div>
+        """, unsafe_allow_html=True)
 
         image = player.get("strCutout") or player.get("strThumb")
         if image:
@@ -71,16 +87,20 @@ if player_name:
     else:
         st.warning("❌ Player not found. Try using full name like 'Virat Kohli' or 'Cristiano Ronaldo'.")
 
-# --- Section 3: News Feed
+# --- Section 3: News Feed ---
 st.markdown("---")
 st.subheader("🗞️ Top Sports Headlines (Live from ESPN)")
 
 news_items = fetch_espn_news(limit=5)
 for item in news_items:
-    st.markdown(f"### [{item['title']}]({item['link']})")
-    st.caption(item['summary'])
+    st.markdown(f"""
+    <div style="border:1px solid #eee; padding:15px; margin:10px 0; border-radius:10px;">
+        <h4><a href="{item['link']}" target="_blank">{item['title']}</a></h4>
+        <p style="color:gray;">{item['summary']}</p>
+    </div>
+    """, unsafe_allow_html=True)
 
-# --- Section 4: Live Scores
+# --- Section 4: Live Scores ---
 st.markdown("---")
 st.subheader("🏏⚽ Live Scores")
 
@@ -107,6 +127,12 @@ with st.expander("🏏 Live Cricket Matches"):
             score_summary = " | ".join([
                 f"{s.get('inning', '')}: {s.get('runs', '')}/{s.get('wickets', '')}" for s in score
             ]) if score else "No score yet"
-            st.markdown(f"**{name}** - {status} - *{score_summary}*")
+            st.markdown(f"""
+            <div style='background-color:#e0f7fa;padding:10px;border-radius:8px;margin-bottom:10px'>
+            <b>{name}</b> <br>
+            <small>Status: {status}</small><br>
+            {score_summary}
+            </div>
+            """, unsafe_allow_html=True)
     else:
         st.info("No live cricket matches at the moment.")
