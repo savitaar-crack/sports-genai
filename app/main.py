@@ -16,12 +16,21 @@ groq_key = os.getenv("GROQ_API_KEY")
 st.set_page_config(page_title="Sports GenAI", layout="wide")
 st.title("🏟️ Sports GenAI Chat")
 
-# --- Section 1: General GPT Prompt (future extension)
-general_question = st.text_input("Ask me anything about sports (news, venues, stats, history):")
+# --- Section 1: Groq Q&A
+st.markdown("### 🤖 Ask Anything About Sports")
+general_question = st.text_input("Ask me anything about sports (e.g., 'Who won the FIFA World Cup in 2018?')")
 
 if general_question:
-    st.write(f"🔍 You asked: {general_question}")
-    st.success("This is where the GenAI (Groq) response will appear.")
+    with st.spinner("🤔 Thinking..."):
+        if groq_key:
+            answer = generate_summary_from_gpt(general_question, prompt_type="qa")
+            if answer:
+                st.success(answer)
+            else:
+                st.error("❌ Groq couldn't generate a response.")
+        else:
+            st.error("❌ GROQ_API_KEY missing in your .env file.")
+
 
 # --- Section 2: Player Lookup
 st.markdown("### 🔎 Search a Player")
