@@ -4,3 +4,5 @@ langchain
 chromadb
 tqdm
 python-dotenv
+feedparser
+
