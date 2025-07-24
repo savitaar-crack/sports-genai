@@ -1,5 +1,8 @@
 import sys
 import os
+
+# ✅ Append parent dir to sys.path BEFORE importing from scripts
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 # Add to your imports at the top
 from scripts.live_scores import get_live_football_scores, get_live_cricket_scores
 from dotenv import load_dotenv
