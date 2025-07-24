@@ -2,20 +2,43 @@ import sys
 import os
 from dotenv import load_dotenv
 import streamlit as st
+
+# Ensure proper module import from /scripts
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 from scripts.live_scores import get_live_football_scores, get_live_cricket_scores
 from scripts.ingest_news import fetch_espn_news
 from scripts.sportsdb_api import search_player
 from scripts.groq_response import generate_summary_from_gpt
 
-from app.scripts.live_scores import get_live_football_scores, get_live_cricket_scores
-
-
-# Load env
+# --- Load Environment ---
 load_dotenv()
 groq_key = os.getenv("GROQ_API_KEY")
 
 # --- Page Config ---
 st.set_page_config(page_title="🏟️ Sports GenAI", layout="wide")
+
+# --- Custom CSS ---
+st.markdown("""
+    <style>
+        .news-card {
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background-color: #f8f9fa;
+        }
+        .score-card {
+            background-color: #f0f9ff;
+            padding: 10px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #00B4D8;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
+# --- App Title ---
 st.markdown("""
 <h1 style='text-align: center; color: #00B4D8;'>🏟️ Sports GenAI Hub</h1>
 <hr style='margin: 1rem 0;'>
@@ -45,10 +68,8 @@ with col2:
     st.image("https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Groq_logo_2023.svg/512px-Groq_logo_2023.svg.png", width=150)
 
 # --- Section 2: Player Lookup ---
-st.markdown("""
----
-<h3>🔎 Player Lookup</h3>
-""", unsafe_allow_html=True)
+st.markdown("---")
+st.markdown("<h3>🔎 Player Lookup</h3>", unsafe_allow_html=True)
 
 player_name = st.text_input("Enter a player’s full name:")
 
@@ -62,7 +83,7 @@ if player_name:
         nationality = player.get("strNationality", "N/A")
 
         st.markdown(f"""
-        <div style="border:1px solid #00B4D8; padding:15px; border-radius:10px; background-color:#f0f9ff;">
+        <div class="score-card">
             <h3>{name}</h3>
             <p><strong>Position:</strong> {position} | <strong>Nationality:</strong> {nationality}</p>
         </div>
@@ -95,7 +116,7 @@ st.subheader("🗞️ Top Sports Headlines (Live from ESPN)")
 news_items = fetch_espn_news(limit=5)
 for item in news_items:
     st.markdown(f"""
-    <div style="border:1px solid #eee; padding:15px; margin:10px 0; border-radius:10px;">
+    <div class="news-card">
         <h4><a href="{item['link']}" target="_blank">{item['title']}</a></h4>
         <p style="color:gray;">{item['summary']}</p>
     </div>
@@ -129,8 +150,8 @@ with st.expander("🏏 Live Cricket Matches"):
                 f"{s.get('inning', '')}: {s.get('runs', '')}/{s.get('wickets', '')}" for s in score
             ]) if score else "No score yet"
             st.markdown(f"""
-            <div style='background-color:#e0f7fa;padding:10px;border-radius:8px;margin-bottom:10px'>
-            <b>{name}</b> <br>
+            <div class="score-card">
+            <b>{name}</b><br>
             <small>Status: {status}</small><br>
             {score_summary}
             </div>
