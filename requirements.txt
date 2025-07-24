@@ -5,4 +5,5 @@ chromadb
 tqdm
 python-dotenv
 feedparser
+pycricbuzz
 

@@ -1,5 +1,7 @@
 import sys
 import os
+# Add to your imports at the top
+from scripts.live_scores import get_live_football_scores, get_live_cricket_scores
 from dotenv import load_dotenv
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -74,3 +76,34 @@ news_items = fetch_espn_news(limit=5)
 for item in news_items:
     st.markdown(f"### [{item['title']}]({item['link']})")
     st.caption(item['summary'])
+
+# --- Section 4: Live Scores
+st.markdown("---")
+st.subheader("🏏⚽ Live Scores")
+
+with st.expander("⚽ Live Football Matches"):
+    football_matches = get_live_football_scores()
+    if football_matches:
+        for match in football_matches[:5]:
+            home = match["homeTeam"]
+            away = match["awayTeam"]
+            full_time = match["score"]["fullTime"]
+            st.markdown(
+                f"**{home} {full_time.get('home', 0)} - {full_time.get('away', 0)} {away}**"
+            )
+    else:
+        st.info("No live football matches at the moment or failed to fetch.")
+
+with st.expander("🏏 Live Cricket Matches"):
+    cricket_matches = get_live_cricket_scores()
+    if cricket_matches:
+        for match in cricket_matches[:5]:
+            name = match.get("name", "Match")
+            status = match.get("status", "Unknown")
+            score = match.get("score", [])
+            score_summary = " | ".join([
+                f"{s.get('inning', '')}: {s.get('runs', '')}/{s.get('wickets', '')}" for s in score
+            ]) if score else "No score yet"
+            st.markdown(f"**{name}** - {status} - *{score_summary}*")
+    else:
+        st.info("No live cricket matches at the moment.")
