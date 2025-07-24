@@ -7,7 +7,8 @@ from scripts.ingest_news import fetch_espn_news
 from scripts.sportsdb_api import search_player
 from scripts.groq_response import generate_summary_from_gpt
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from app.scripts.live_scores import get_live_football_scores, get_live_cricket_scores
+
 
 # Load env
 load_dotenv()
