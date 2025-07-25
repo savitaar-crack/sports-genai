@@ -16,7 +16,7 @@ load_dotenv()
 groq_key = os.getenv("GROQ_API_KEY")
 
 # --- Page Config ---
-st.set_page_config(page_title="\ud83c\udfdf\ufe0f Sports GenAI", layout="wide")
+st.set_page_config(page_title="⚽ Sports GenAI", layout="wide")
 
 # --- Custom CSS ---
 st.markdown("""
