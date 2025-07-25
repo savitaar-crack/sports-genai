@@ -47,37 +47,34 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # --- App Title ---
-st.markdown("""
-<h1 style='text-align: center;'>⚽ Sports GenAI Hub</h1>
-<hr style='margin: 1rem 0;'>
-""", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center;'>⚽ Sports GenAI Hub</h1><hr>", unsafe_allow_html=True)
 
 # --- Section 1: Groq Q&A ---
 col1, col2 = st.columns(2)
 
 with col1:
-    st.markdown("### \ud83d\udd0d Ask About Any Match, Event or Player")
+    st.markdown("### 🔍 Ask About Any Match, Event or Player")
     general_question = st.text_input("Ask me anything about sports...")
 
     if general_question:
-        with st.spinner("\ud83e\udd14 Thinking..."):
+        with st.spinner("🤔 Thinking..."):
             if groq_key:
                 answer = generate_summary_from_gpt(general_question, prompt_type="qa")
                 if answer:
                     st.success(answer)
                 else:
-                    st.error("\u274c Groq couldn't generate a response.")
+                    st.error("❌ Groq couldn't generate a response.")
             else:
-                st.error("\u274c GROQ_API_KEY missing in your .env file.")
+                st.error("❌ GROQ_API_KEY missing in your .env file.")
 
 with col2:
-    st.markdown("### \ud83e\udde0 Powered by Groq GenAI")
+    st.markdown("### 🤖 Powered by Groq GenAI")
     st.caption("This app uses Groq (Mixtral) to summarize and answer queries.")
     st.image("https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Groq_logo_2023.svg/512px-Groq_logo_2023.svg.png", width=150)
 
 # --- Section 2: Player Lookup ---
 st.markdown("---")
-st.markdown("<h3>\ud83d\udd0e Player Lookup</h3>", unsafe_allow_html=True)
+st.markdown("<h3>🔎 Player Lookup</h3>", unsafe_allow_html=True)
 
 player_name = st.text_input("Enter a player’s full name:")
 
@@ -105,21 +102,21 @@ if player_name:
         if description:
             st.markdown(description[:500] + "...")
         else:
-            st.warning("\u26a0\ufe0f No biography found. Generating one using AI...")
+            st.warning("⚠️ No biography found. Generating one using AI...")
             if groq_key:
                 ai_bio = generate_summary_from_gpt(player_name)
                 if ai_bio:
                     st.markdown(ai_bio)
                 else:
-                    st.error("\u274c Groq failed to generate a biography.")
+                    st.error("❌ Groq failed to generate a biography.")
             else:
-                st.error("\u274c GROQ_API_KEY missing in your .env file.")
+                st.error("❌ GROQ_API_KEY missing in your .env file.")
     else:
-        st.warning("\u274c Player not found. Try using full name like 'Virat Kohli' or 'Cristiano Ronaldo'.")
+        st.warning("❌ Player not found. Try using full name like 'Virat Kohli' or 'Cristiano Ronaldo'.")
 
 # --- Section 3: News Feed ---
 st.markdown("---")
-st.subheader("\ud83d\udcfe\ufe0f Top Sports Headlines (Live from ESPN)")
+st.subheader("📰 Top Sports Headlines (Live from ESPN)")
 
 news_items = fetch_espn_news(limit=5)
 for item in news_items:
@@ -132,9 +129,9 @@ for item in news_items:
 
 # --- Section 4: Live Scores ---
 st.markdown("---")
-st.subheader("\ud83c\udfcf\u26bd Live Scores")
+st.subheader("🏏⚽ Live Scores")
 
-with st.expander("\u26bd Live Football Matches"):
+with st.expander("⚽ Live Football Matches"):
     football_matches = get_live_football_scores()
     if football_matches:
         for match in football_matches[:5]:
@@ -147,7 +144,7 @@ with st.expander("\u26bd Live Football Matches"):
     else:
         st.info("No live football matches at the moment or failed to fetch.")
 
-with st.expander("\ud83c\udfcf Live Cricket Matches"):
+with st.expander("🏏 Live Cricket Matches"):
     cricket_matches = get_live_cricket_scores()
     if cricket_matches:
         for match in cricket_matches[:5]:
