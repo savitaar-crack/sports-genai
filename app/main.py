@@ -48,7 +48,7 @@ st.markdown("""
 
 # --- App Title ---
 st.markdown("""
-<h1 style='text-align: center;'>\ud83c\udfdf\ufe0f Sports GenAI Hub</h1>
+<h1 style='text-align: center;'>⚽ Sports GenAI Hub</h1>
 <hr style='margin: 1rem 0;'>
 """, unsafe_allow_html=True)
 
