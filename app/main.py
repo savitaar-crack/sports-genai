@@ -127,39 +127,47 @@ for item in news_items:
     </div>
     """, unsafe_allow_html=True)
 
-# --- Section 4: Live Scores ---
+# --- Section4: Live Scores ---
 st.markdown("---")
-st.subheader("🏏⚽ Live Scores")
+st.subheader(" Live Scores")
 
-with st.expander("⚽ Live Football Matches"):
-    football_matches = get_live_football_scores()
-    if football_matches:
-        for match in football_matches[:5]:
-            home = match["homeTeam"]
-            away = match["awayTeam"]
-            full_time = match["score"]["fullTime"]
-            st.markdown(
-                f"**{home} {full_time.get('home', 0)} - {full_time.get('away', 0)} {away}**"
-            )
-    else:
-        st.info("No live football matches at the moment or failed to fetch.")
+try:
+    with st.expander(" Live Football Matches"):
+        football_matches = get_live_football_scores()
+        if football_matches:
+            for match in football_matches[:5]:
+                home = match.get("homeTeam")
+                away = match.get("awayTeam")
+                full_time = match.get("score", {}).get("fullTime")
+                if home and away and full_time:
+                    st.markdown(
+                        f"**{home} {full_time.get('home',0)} - {full_time.get('away',0)} {away}**"
+                    )
+                else:
+                    st.info("No live football matches at the moment or failed to fetch.")
+except Exception as e:
+    st.error(f"Error fetching live football scores: {e}")
 
-with st.expander("🏏 Live Cricket Matches"):
-    cricket_matches = get_live_cricket_scores()
-    if cricket_matches:
-        for match in cricket_matches[:5]:
-            name = match.get("name", "Match")
-            status = match.get("status", "Unknown")
-            score = match.get("score", [])
-            score_summary = " | ".join([
-                f"{s.get('inning', '')}: {s.get('runs', '')}/{s.get('wickets', '')}" for s in score
-            ]) if score else "No score yet"
-            st.markdown(f"""
-            <div class="score-card">
-            <b>{name}</b><br>
-            <small>Status: {status}</small><br>
-            {score_summary}
-            </div>
-            """, unsafe_allow_html=True)
-    else:
-        st.info("No live cricket matches at the moment.")
+try:
+    with st.expander(" Live Cricket Matches"):
+        cricket_matches = get_live_cricket_scores()
+        if cricket_matches:
+            for match in cricket_matches[:5]:
+                name = match.get("name", "Match")
+                status = match.get("status", "Unknown")
+                score = match.get("score", [])
+                if name and status and score:
+                    score_summary = " | ".join([
+                        f"{s.get('inning', '')}: {s.get('runs', '')}/{s.get('wickets', '')}" for s in score
+                    ]) if score else "No score yet"
+                    st.markdown(f"""
+                    <div class="score-card">
+                        <b>{name}</b><br>
+                        <small>Status: {status}</small><br>
+                        {score_summary}
+                    </div>
+                    """, unsafe_allow_html=True)
+                else:
+                    st.info("No live cricket matches at the moment.")
+except Exception as e:
+    st.error(f"Error fetching live cricket scores: {e}")
